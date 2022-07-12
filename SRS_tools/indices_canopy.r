@@ -39,7 +39,7 @@ if (length(args) < 1) {
 ########################################################################
 # Read raster
 nv_data <- raster::raster(data_raster)
-nv_data <- raster::aggregate(nv_data, fact = 50)
+nv_data <- raster::aggregate(nv_data, fact = 10)
 # Convert raster to SpatialPointsDataFrame
 r_pts <- raster::rasterToPoints(nv_data, spatial = T)
 
@@ -60,7 +60,7 @@ SensorBands <- HDR_Refl$wavelength
 # compute a set of spectral indices defined by IndexList from S2 data
 IndexList <- c(indice_choice)
 # ReflFactor = 10000 when reflectance is coded as INT16
-Refl <- raster::aggregate(Refl, fact = 50)
+Refl <- raster::aggregate(Refl, fact = 10)
 Indices <- ComputeSpectralIndices_Raster(Refl = Refl, SensorBands = SensorBands,
                                                   Sel_Indices = IndexList,
                                                   ReflFactor = 10000, StackOut=F)
@@ -95,7 +95,7 @@ write.table(r_pts@data, file = "Spec_Index.tabular", sep = "\t", dec = ".", na =
 
 spectrale_indices <- function(data, indice_choice) {
   graph_indices <- ggplot2::ggplot(data) +
-  ggplot2::geom_point(ggplot2::aes_string(x = data[, 2], y = data[, 3], color = data[, 4]), size = 1, shape = "square") + ggplot2::scale_colour_gradient2(low = "white", high = "#087543", na.value = "grey50") +
+  ggplot2::geom_point(ggplot2::aes_string(x = data[, 2], y = data[, 3], color = data[, 4]), size = 1, shape = "square") + ggplot2::scale_colour_gradient2(low = "blue", high = "#087543", na.value = "grey50") +
   ggplot2::xlab("Longitude") + ggplot2::ylab("Latitude") +
   ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust = 1), plot.title = ggplot2::element_text(color = "black", size = 12, face = "bold")) + ggplot2::ggtitle(indice_choice)
   

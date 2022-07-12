@@ -80,11 +80,12 @@ ber_name <- "Berger-Parker"
 r_pts@data[, ber_name] <- ber_df[, 1]
 
 #Pielou's Evenness
-#pie <- rasterdiv::Pielou(copNDVIlr, window = 9, np = 1)
-#pie_df <- data.frame(raster::rasterToPoints(pie, spatial = T))
-#stop(length(pie_df[, 1]), "et", length(r_pts@data[, 1]))
-#pie_name <- "Pielou"
-#r_pts@data[, pie_name] <- pie_df[, 1]
+pie <- rasterdiv::Pielou(copNDVIlr, window = 9, np = 1)
+pie_df <- data.frame(raster::rasterToPoints(pie, spatial = T))
+if (length(pie_df[, 1]) == length(r_pts@data[, 1])) {
+  pie_name <- "Pielou"
+  r_pts@data[, pie_name] <- pie_df[, 1]
+}
 
 #Hill's numbers
 hil <- rasterdiv::Hill(copNDVIlr, window = 9, alpha = alpha, np = 1)
@@ -101,11 +102,17 @@ r_pts@data[, prao_name] <- prao_df[, 3]
 #Cumulative Residual Entropy
 cre <- rasterdiv::CRE(copNDVIlr, window = 9, np = 1)
 cre_df <- data.frame(raster::rasterToPoints(cre, spatial = T))
-cre_name <- "CRE"
-r_pts@data[, cre_name] <- cre_df[, 1]
+if (length(cre_df[, 1]) == length(r_pts@data[, 1])) {
+  cre_name <- "CRE"
+  r_pts@data[, cre_name] <- cre_df[, 1]
+}
 
+if (length(cre_df[, 1]) == length(r_pts@data[, 1]) | length(pie_df[, 1]) == length(r_pts@data[, 1])) {
+list_indice <- list("Shannon", "Renyi", "Berger-Parker", "Pielou", "Hill", "Prao", "CRE")
+} else {
+list_indice <- list("Shannon", "Renyi", "Berger-Parker", "Hill", "Prao")
+}
 ## Plotting all the graph and writing a tabular
-list_indice <- list("Shannon", "Renyi", "Berger-Parker", "Hill", "Prao", "CRE")
 for (indice in list_indice) {
   spectrale_indices(data = r_pts@data, indice_choice = indice)
 }
