@@ -26,34 +26,35 @@ if (length(args) < 1) {
     stop("This tool needs at least 1 argument")
 }else{
     data_raster <- args[1]
-    rasterheader <- args[2]
-    source(args[3])
+    data_header <- args[2]
+    data <- args[3]
     source(args[4])
     source(args[5])
-    indice_choice <- as.character(args[6])
+    source(args[6])
+    indice_choice <- as.character(args[7])
+    source(args[8])
 
 }
 
 ########################################################################
 ##                  COMPUTE SPECTRAL INDEX : NDVI                     ##
 ########################################################################
-# Read raster
-nv_data <- raster::raster(data_raster)
-nv_data <- raster::aggregate(nv_data, fact = 10)
-# Convert raster to SpatialPointsDataFrame
-r_pts <- raster::rasterToPoints(nv_data, spatial = T)
 
-# reproject sp object
-geo.prj <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" 
-r_pts <- sp::spTransform(r_pts, sp::CRS(geo.prj)) 
+if (data != "") {
+  #Create a directory where to unzip your folder of data
+  dir.create("data_dir")
+  unzip(data, exdir = "data_dir")
 
-
-# Assign coordinates to @data slot, display first 6 rows of data.frame
-r_pts@data <- data.frame(r_pts@data, longitude = sp::coordinates(r_pts)[, 1],
-                         latitude = sp::coordinates(r_pts)[, 2])                         
-
-
-Refl <- raster::brick(data_raster)
+  # Read raster
+  data_raster <-list.files("data_dir/results/Reflectance", pattern = "_Refl")
+  data_raster <- file.path("data_dir/results/Reflectance", data_raster[1])
+  Refl <- raster::brick(data_raster)
+  Refl2 <- raster::raster(data_raster)
+} else{
+  # Read raster
+  Refl <- raster::brick(data_raster)
+  Refl2 <- raster::raster(data_raster)
+}
 # get raster band name and clean format. Expecting band name and wavelength to be documented in image
 HDR_Refl <- read_ENVI_header(get_HDR_name(data_raster))
 SensorBands <- HDR_Refl$wavelength
@@ -64,6 +65,10 @@ Refl <- raster::aggregate(Refl, fact = 10)
 Indices <- ComputeSpectralIndices_Raster(Refl = Refl, SensorBands = SensorBands,
                                                   Sel_Indices = IndexList,
                                                   ReflFactor = 10000, StackOut=F)
+
+# Convert raster to SpatialPointsDataFrame
+Refl2 <- raster::aggregate(Refl2, fact = 10)
+r_pts <- convert_raster(Refl2)                       
 
 # create directory for Spectral indices
 results_site_path <- "RESULTS"
@@ -80,27 +85,8 @@ for (SpIndx in names(Indices$SpectralIndices)) {
 }
 
 spec_indices <- as.data.frame(spec_indices)
-r_pts@data[, indice_choice] <- spec_indices[, 3]
-write.table(r_pts@data, file = "Spec_Index.tabular", sep = "\t", dec = ".", na = " ", row.names = F, col.names = T, quote = FALSE)
+r_pts[, indice_choice] <- spec_indices[, 3]
+write.table(r_pts, file = "Spec_Index.tabular", sep = "\t", dec = ".", na = " ", row.names = F, col.names = T, quote = FALSE)
 
-# Update Cloud mask based on radiometric filtering
-# eliminate pixels with NDVI < NDVI_Thresh because not enough vegetation
-##NDVI_Thresh <- 0.5
-##Elim <- which(values(Indices$SpectralIndices[['NDVI']]) < NDVI_Thresh)
-##CloudInit <- stars::read_stars(cloudmasks$BinaryMask)
-##CloudInit$CloudMask_Binary[Elim] <- 0
-# save updated cloud mask
-##Cloud_File <- file.path(Cloud_path, 'CloudMask_Binary_Update')
-##stars::write_stars(CloudInit, dsn = Cloud_File, driver = "ENVI", type = 'Byte')
-
-spectrale_indices <- function(data, indice_choice) {
-  graph_indices <- ggplot2::ggplot(data) +
-  ggplot2::geom_point(ggplot2::aes_string(x = data[, 2], y = data[, 3], color = data[, 4]), size = 1, shape = "square") + ggplot2::scale_colour_gradient2(low = "blue", high = "#087543", na.value = "grey50") +
-  ggplot2::xlab("Longitude") + ggplot2::ylab("Latitude") +
-  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust = 1), plot.title = ggplot2::element_text(color = "black", size = 12, face = "bold")) + ggplot2::ggtitle(indice_choice)
-  
-ggplot2::ggsave(paste0(indice_choice, ".png"), graph_indices, width = 12, height = 10, units = "cm")
-}
-
-spectrale_indices(data = r_pts@data, indice_choice = indice_choice)
+plot_indices(data = r_pts, titre = indice_choice)
 

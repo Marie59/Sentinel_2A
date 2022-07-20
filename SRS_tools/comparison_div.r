@@ -30,7 +30,6 @@ if (length(args) < 1) {
     rasterheader <- args[2]
     text_compo <- args[3]
     plots_zip <- args[4]
-    type <- as.character(args[5])
 }
 
 ################################################################################
@@ -82,11 +81,6 @@ Blue_Thresh <- 500
 NIR_Thresh  <- 1500
 Continuum_Removal <- TRUE
 
-print("PERFORM RADIOMETRIC FILTERING")
-ImPathShade <- biodivMapR::perform_radiometric_filtering(
-  Image_Path = Input_Image_File, Mask_Path = Input_Mask_File, Output_Dir = Output_Dir, NDVI_Thresh = NDVI_Thresh, 
-  Blue_Thresh = Blue_Thresh, NIR_Thresh = NIR_Thresh)
-
 print("PERFORM PCA ON RASTER")
 PCA_Output <- biodivMapR::perform_PCA(Input_Image_File = Input_Image_File, Input_Mask_File = Input_Mask_File,
                           Output_Dir = Output_Dir, TypePCA = TypePCA, FilterPCA = FilterPCA, nbCPU = nbCPU, MaxRAM = MaxRAM)
@@ -94,9 +88,6 @@ PCA_Output <- biodivMapR::perform_PCA(Input_Image_File = Input_Image_File, Input
 PCA_Files <- PCA_Output$PCA_Files
 Pix_Per_Partition <- PCA_Output$Pix_Per_Partition
 nb_partitions <- PCA_Output$nb_partitions
-Input_Mask_File <- PCA_Output$ImPathShade
-PCA_model <- PCA_Output$PCA_model
-SpectralFilter <- PCA_Output$SpectralFilter
 # path for the updated mask
 Input_Mask_File <- PCA_Output$MaskPath
 
@@ -116,38 +107,6 @@ print("MAP SPECTRAL SPECIES")
 
 Kmeans_info <- biodivMapR::map_spectral_species(Input_Image_File = Input_Image_File, Output_Dir = Output_Dir, PCA_Files = PCA_Files, Input_Mask_File = Input_Mask_File, Pix_Per_Partition = Pix_Per_Partition, nb_partitions = nb_partitions, nbCPU = nbCPU, MaxRAM = MaxRAM, nbclusters = nbclusters, TypePCA = TypePCA)
 
-if (type == "alpha" | type == "all") {
-  print("MAP ALPHA DIVERSITY")
-  Index_Alpha <- c('Shannon')
-  alpha_div <- biodivMapR::map_alpha_div(Input_Image_File = Input_Image_File, Output_Dir = Output_Dir, TypePCA = TypePCA, window_size = window_size, nbCPU = nbCPU, MaxRAM = MaxRAM, Index_Alpha = Index_Alpha, nbclusters = nbclusters)
-
-alpha_path <- file.path(Output_Dir, Image_Name, TypePCA, "ALPHA", "Shannon_10_Fullres.zip")
-dir.create("alpha_fold")
-unzip(alpha_path, exdir = "alpha_fold")
-alpha_data <- list.files("alpha_fold")
-alpha_raster <- raster::raster(alpha_data)
-get_alpha <- raster::rasterToPoints(alpha_raster, spatial = T)
-stop(head(get_alpha))
-#get_alpha <- grep(pattern = paste0(window_size, '_Fullres.zip'), x = alpha_path)
-
-#alpha_plot <- rasterVis::levelplot(alpha_data,layout=c(0,1,1), main="alpha")
-}
-#Create a random raster layer
-
-#alpha_map <- ggplot2::ggplot(data = rdf)+
- # ggplot2::geom_raster(mapping = ggplot2::aes(x = x, y = y))
-#mapper_alpha_div <- ggplot2::ggsave("Alpha_diversity.png", alpha_map, scale = 0.65, width = 12, height = 9, units = "in", dpi = 200, limitsize = TRUE)
-#mapper_alpha <- plot(list.files(file.path("alpha_beta")))
-#save(mapper_alpha, file = "Alpha_map.png")
-
-##### Trouver le moyen de mapview le truc la 
-
-if (type == "beta" | type == "all") {
-  print("MAP BETA DIVERSITY")
-  beta_div <- biodivMapR::map_beta_div(Input_Image_File = Input_Image_File, Output_Dir = Output_Dir, TypePCA = TypePCA, window_size = window_size, nb_partitions = nb_partitions, nbCPU = nbCPU, MaxRAM = MaxRAM, nbclusters = nbclusters)
-} 
-
-
 ################################################################################
 ##          COMPUTE ALPHA AND BETA DIVERSITY FROM FIELD PLOTS                 ##
 ################################################################################
@@ -155,9 +114,6 @@ if (type == "beta" | type == "all") {
 Selected_Features <- read.table(Sel_PC)[[1]]
 ## path for selected components
 
-if (type == "funct" | type == "all") {
-mapper <- biodivMapR::map_functional_div(Original_Image_File = Input_Image_File, Functional_File = PCA_Files,  Selected_Features = Selected_Features, Output_Dir = Output_Dir, window_size = window_size, nbCPU = nbCPU, MaxRAM = MaxRAM, TypePCA = TypePCA)
-}
 # location of the directory where shapefiles used for validation are saved
 dir.create("VectorDir")
 unzip(plots_zip, exdir = "VectorDir")
@@ -176,6 +132,7 @@ Path_SpectralSpecies <- Kmeans_info$SpectralSpecies
 
 Biodiv_Indicators <- biodivMapR::diversity_from_plots(Raster_SpectralSpecies = Path_SpectralSpecies, Plots = Path_Vector, nbclusters = nbclusters, Raster_Functional = PCA_Files, Selected_Features = Selected_Features)
 
+
 Shannon_RS <- c(Biodiv_Indicators$Shannon)[[1]]
 FRic <- c(Biodiv_Indicators$FunctionalDiversity$FRic)
 FEve <- c(Biodiv_Indicators$FunctionalDiversity$FEve)
@@ -188,11 +145,7 @@ Biodiv_Indicators$Name_Plot = seq(1, length(Biodiv_Indicators$Shannon[[1]]), by 
 # write RS indicators
 ####################################################
 # write a table for Shannon index
-if (type == "alpha" | type == "comparison" | type == "all") {
-write.table(Shannon_RS, file = "ShannonIndex.tabular", sep = "\t", dec = ".", na = " ", row.names = Biodiv_Indicators$Name_Plot, col.names = c("Shannon_Index"), quote = FALSE)
-}
 
-if (type == "funct" | type == "comparison" | type == "all") {            
 # write a table for all spectral diversity indices corresponding to alpha diversity
 Results <- data.frame(Name_Vector, Biodiv_Indicators$Richness, Biodiv_Indicators$Fisher,
                       Biodiv_Indicators$Shannon, Biodiv_Indicators$Simpson,
@@ -201,17 +154,13 @@ Results <- data.frame(Name_Vector, Biodiv_Indicators$Richness, Biodiv_Indicators
                       Biodiv_Indicators$FunctionalDiversity$FDiv)
 
 names(Results)  = c("ID_Plot", "Species_Richness", "Fisher", "Shannon", "Simpson", "FRic", "FEve", "FDiv")
-write.table(Results, file = "AlphaDiversity.tabular", sep = "\t", dec = ".", na = " ", row.names = F, col.names = T, quote = FALSE)
-}
+write.table(Results, file = "Diversity.tabular", sep = "\t", dec = ".", na = " ", row.names = F, col.names = T, quote = FALSE)
 
-if (type == "beta" | type == "comparison" | type == "all") {
 # write a table for Bray Curtis dissimilarity
 BC_mean <- Biodiv_Indicators$BCdiss
 colnames(BC_mean) <- rownames(BC_mean) <- Biodiv_Indicators$Name_Plot
 write.table(BC_mean, file = "BrayCurtis.tabular", sep = "\t", dec = ".", na = " ", row.names = F, col.names = T, quote = FALSE)
-}
 
-if (type == "comparison" | type == "all") {
 ####################################################
 # illustrate results
 ####################################################
@@ -262,5 +211,5 @@ gAll <- gridExtra::grid.arrange(gridExtra::arrangeGrob(g1 + ggplot2::theme(legen
 filename <- ggplot2::ggsave("BetaDiversity_PcoA1_vs_PcoA2_vs_PcoA3.png", gAll, scale = 0.65, width = 12, height = 9, units = "in", dpi = 200, limitsize = TRUE)
 
 filename
-}
+
 

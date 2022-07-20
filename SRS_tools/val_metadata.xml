@@ -14,7 +14,7 @@
         Rscript
             '$__tool_directory__/val_metadata.r'
             '$input'
-            '$output'
+            '$output' 1> Metadata_validation.txt
         ]]>
     </command>
     <inputs>
@@ -25,8 +25,8 @@
     </outputs>
     <tests>
         <test>
-           <param name="input" value="http://indores-tmp.in2p3.fr/geonetwork/srv/api/records/112ebeea-e79c-422c-8a43-a5a8323b446b/formatters/xml?approved=true"/>
-           <output name="output" value="Metadata_validation.csv"/>
+           <param name="input" value="112ebeea-e79c-422c-8a43-a5a8323b446b.xml"/>
+           <output name="output" value="Metadata_validation.txt"/>
         </test>
     </tests>
     <help><![CDATA[
@@ -42,7 +42,6 @@ Read a ISO 19139 from a file or url into an object in the geometa model.
 **Input description**
 
 
-
 +-------------+
 |   Metadata  |
 +=============+
@@ -52,6 +51,8 @@ Read a ISO 19139 from a file or url into an object in the geometa model.
 +-------------+
 
 **Output**
+
+A text file saying TRUE or FALSE depending on if the xml metadata are conforme according to ISO 19139.
     ]]>    </help>
         <expand macro="SRS_S2ref"/>
 </tool>

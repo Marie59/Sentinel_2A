@@ -7,8 +7,10 @@
 #####Packages : ncdf4,
 #               geometa,
 #               httr
-library(ncdf4)
-library(XML)
+#               xml
+#               xml2
+library(geometa)
+
 #####Load arguments
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -27,15 +29,14 @@ if (length(args) < 1) {
 # <!--ISO 19139 XML compliance: NO-->
 input_data <- xml2::read_xml(input_data)
 
-tmp <- tempfile(fileext = ".xml")
+dir.create("results")
+file.create("results/meta.xml")
 
-xml2::write_xml(input_data, tmp)
+xml2::write_xml(input_data, file = "results/meta.xml")
 
-md <- geometa::readISO19139(tmp)
+md <- geometa::readISO19139("results/meta.xml")
 
 
 # validate iso
-cat("\nValidation of metadata according to ISO 19139\n\n ", md$validate(), file = "Metadata_validation.txt", fill = 1, append = TRUE)
-#validation <- capture.output(md[["validate"]])
+cat("\nValidation of metadata according to ISO 19139\n", md$validate(), file = "Metadata_validation.txt", fill = 1, append = F)
 
-#write.csv(validation, "Metadata_validation.csv", na = " ", row.names = F, col.names = F, quote = FALSE)

@@ -86,6 +86,8 @@ cloudmasks <- save_cloud_s2(S2_stars = S2obj$S2_Stack,
                                        Cloud_path = Cloud_path,
                                        S2source = S2source, SaveRaw = T)
 
+zip_cloud <- file.path('Cloud.zip')
+zip::zip(zip_cloud, Cloud_path)
 ##____________________________________________________________________##
 ##                        Write REFLECTANCE                           ##
 ##--------------------------------------------------------------------##
@@ -113,3 +115,6 @@ if (data_source == "SAFE") {
 save_data <- save_reflectance_s2(S2_stars = S2obj$S2_Stack, Refl_path = Refl_path,
                                S2Sat = NULL, tile_S2 = tile_S2, dateAcq_S2 = dateAcq_S2,
                                Format = 'ENVI', datatype = 'Int16', MTD = S2obj$S2_Bands$metadata, MTD_MSI = S2obj$S2_Bands$metadata_MSI)
+
+zip_files <- file.path('Refl.zip')
+zip::zip(zip_files, Refl_dir)
