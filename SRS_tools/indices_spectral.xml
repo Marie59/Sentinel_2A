@@ -1,4 +1,4 @@
-<tool id="SRS_canopy_indices" name="Compute spectral indices" version="@VERSION@" profile = "20.01">
+<tool id="SRS_spectral_indices" name="Compute spectral indices" version="@VERSION@" profile = "20.01">
     <description>as NDVI from remote sensing data</description>
     <macros>
         <import>macro.xml</import>
@@ -16,6 +16,7 @@
         <requirement type="package" version="0.62.0">r-matrixStats</requirement> 
         <requirement type="package" version="3.3.6">r-ggplot2</requirement>
         <requirement type="package" version="3.99_0.9">r-xml</requirement>  
+        <requirement type="package" version="2.2.0">r-zip</requirement>
     </requirements>
     <command detect_errors="exit_code"><![CDATA[ 
         #if $method.type == 'envi_bil': 
@@ -23,7 +24,7 @@
           cp '$input_header' '${input_header.element_identifier}' &&
         #end if 
         Rscript
-            '$__tool_directory__/indices_canopy.r'
+            '$__tool_directory__/indices_spectral.r'
              #if $method.type == 'envi_bil':
               '$method.input_raster.element_identifier'
               '$method.input_header.element_identifier'
@@ -38,14 +39,16 @@
             '$__tool_directory__/prosail-master/R/Lib_PROSAIL_HybridInversion.R'
             '$input_indice'
             '$__tool_directory__/functions.r'
+            '$choice'
             '$output_indices'
+            '$plots'
         ]]>
     </command>
     <inputs>
         <conditional name="method">
-            <param name="type" type="select" label="Which kind of data ?">
+            <param name="type" type="select" label="In which format are your data ?" help="You can directly take the Reflectance output from the tool 'Preprocessing sentinel 2 data'">
                 <option value="zipper">The data you are using are in a zip folder Reflectance</option>
-                <option value="envi_bil">Your already have the files ENVI BIL</option>
+                <option value="envi_bil">You already have the files ENVI BIL</option>
             </param>
             <when value="zipper">
                 <param name="input" type="data" format="data" multiple="true" label="Input data"/>
@@ -94,20 +97,31 @@
             <option value="SR">SR</option>
             <option value="CR_SWIR">CR_SWIR</option>
         </param>
+        <param name="choice" type="select" label="Do you want the raster layer of the indice as an output ?" display="radio">
+            <option value="N">No</option>
+            <option value="Y">Yes</option>
+        </param>
     </inputs>
     <outputs>
-        <data name="output_indices" from_work_dir="Spec_Index.tabular" format="tabular" label="${input_indice}">
-        </data>
-        <collection type="list" name="plots">
+        <data name="output_indices" from_work_dir="Spec_Index.tabular" format="tabular" label="${input_indice} tabular"/>
+        <collection type="list" name="plots" label="${input_indice} plot">
             <discover_datasets pattern="(?P&lt;designation&gt;.+)\.png" visible="false" format="png"/>
         </collection>
+        <data name="output_raster" from_work_dir="raster.zip" format="zip" label="${input_indice} raster">
+            <filter> choice == 'Y'</filter>
+        </data>
+        <data name="output_header" from_work_dir="header.zip" format="zip" label="${input_indice} header">
+            <filter> choice == 'Y'</filter>
+        </data>
     </outputs>
     <tests>
         <test>
+            <param name="type" value="envi_bil"/>
             <param name="input_raster" value="S2A_Subset"/>
             <param name="input_header" value="S2A_Subset.hdr"/>
-            <param name="input_indice" value="ARI1"/>
-            <output name="output_indices" value="ARI1.tabular"/>
+            <param name="input_indice" value="NDVI"/>
+            <param name="choice" value="N"/>
+            <output name="output_indices" value="NDVI.tabular"/>
             <output_collection name="plots" type="list" count="1"/>
         </test>
     </tests>
@@ -119,7 +133,7 @@ Computes biodiversity spectral indices from satellite remote sensing data
 
 **What it does**
 
-This tool includes inversion routines based on iterative optimization and hybrid method in order to estimate vegetation properties (leaf and canopy) from sensor measurements.
+This tool estimates vegetation properties (leaf and canopy) from sensor measurements. You can choose which vegetation property you want to compute.
 
 **Input description**
 
@@ -132,10 +146,14 @@ The image is an ENVI raster including :
 
 The header file is a text file including all necessary metadata which can be read with a text editor. It includes image dimensions, projection, and the name and central wavelength for each spectral band.
 
-In order to get such input we advise to use the tool preprocessing sentinel 2 data. 
+In order to get such input we advise to use the tool preprocessing sentinel 2 data. If you did so you can directly enter the "Reflectance" output from this tool and thus select the otpion "The data you are using are in a zip folder Reflectance". 
+
+⚠️ If you do not use this Reflectance folder make sure that your data are respectively in bil and hdr format in the datatypes.
+
+Finally, you can choose whether or not you want to have the raster layer of your indice.
 
 +--------------+----------+---------------+
-|      BIL     | ENVI HDR |Spectral indice|
+|      BIL     |    HDR   |Spectral indice|
 +==============+==========+===============+
 | raster stack | Metadata |     NDVI      |
 +--------------+----------+---------------+
@@ -148,6 +166,7 @@ One tabular with 3 columns : longitude, latitude and the chosen indice.
 
 One png plot for the vizualisation of the chosen indice.
 
+Opionnnal, the raster layer in a zip file.
     ]]>    </help>
         <expand macro="SRS_prosailref"/>
 </tool>

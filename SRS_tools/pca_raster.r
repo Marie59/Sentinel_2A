@@ -30,6 +30,7 @@ if (length(args) < 1) {
     rasterheader <- args[2]
     data <- args[3]
     type <- as.character(args[4])
+    source(args[5])
 }
 
 ################################################################################
@@ -96,6 +97,15 @@ Continuum_Removal <- TRUE
 print("PERFORM PCA ON RASTER")
 PCA_Output <- biodivMapR::perform_PCA(Input_Image_File = Input_Image_File, Input_Mask_File = Input_Mask_File,
                           Output_Dir = Output_Dir, TypePCA = TypePCA, FilterPCA = FilterPCA, nbCPU = nbCPU, MaxRAM = MaxRAM)
+
+pca_path <- file.path(Output_Dir, basename(data_raster), type, "PCA", "OutputPCA_8_PCs")
+pca_raster <- raster::raster(pca_path)
+get_pca <- convert_raster(pca_raster)
+
+colnames(get_pca) <- c('PCA', 'longitude', 'latitude')
+plot_indices(get_pca, titre = "PCA")
+
+write.table(get_pca, file = "PCA.tabular", sep = "\t", dec = ".", na = " ", row.names = F, col.names = T, quote = FALSE)
 
 #PCA_Files <- PCA_Output$PCA_Files
 PCA_Files <- file.path("RESULTS", basename(data_raster), type, "PCA")

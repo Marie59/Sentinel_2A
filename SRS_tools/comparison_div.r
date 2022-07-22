@@ -28,17 +28,26 @@ if (length(args) < 1) {
 }else{
     data_raster <- args[1]
     rasterheader <- args[2]
-    text_compo <- args[3]
+    data <- args[3]
     plots_zip <- args[4]
 }
 
 ################################################################################
 ##              DEFINE PARAMETERS FOR DATASET TO BE PROCESSED                 ##
 ################################################################################
-# expected to be in ENVI HDR  
+if (data != "") {
+  #Create a directory where to unzip your folder of data
+  dir.create("data_dir")
+  unzip(data, exdir = "data_dir")
+  # Path to raster
+  data_raster <-list.files("data_dir/results/Reflectance", pattern = "_Refl")
+  Input_Image_File <- file.path("data_dir/results/Reflectance", data_raster[1])
+  Input_Header_File <- file.path("data_dir/results/Reflectance", data_raster[2])
 
-Input_Image_File <- file.path(getwd(), data_raster, fsep = "/")
-Input_Header_File <- file.path(getwd(), rasterheader, fsep = "/")
+} else{
+  Input_Image_File <- file.path(getwd(), data_raster, fsep = "/")
+  Input_Header_File <- file.path(getwd(), rasterheader, fsep = "/")
+}
 # path for the Mask raster corresponding to image to process
 # expected to be in ENVI HDR format, 1 band, integer 8bits
 # expected values in the raster: 0 = masked, 1 = selected
@@ -93,11 +102,11 @@ Input_Mask_File <- PCA_Output$MaskPath
 
 # 3- Select principal components from the PCA raster
 # Select components from the PCA/SPCA/MNF raster
+sel_compo <- c("1\n", "2\n", "3\n", "4\n", "5\n", "6\n", "7\n", "8")
 Image_Name <- tools::file_path_sans_ext(basename(Input_Image_File))
 Output_Dir_Full <- file.path(Output_Dir, Image_Name, TypePCA, "PCA")
-data_components <- read.table(text_compo, sep = "\t", dec = ".", fill = TRUE, encoding = "UTF-8")
-write.table(data_components, paste0(Output_Dir_Full, "/Selected_Components.txt"))
-
+#data_components <- read.table(sel_compo, sep = "\t", dec = ".", fill = TRUE, encoding = "UTF-8")
+write.table(sel_compo, paste0(Output_Dir_Full, "/Selected_Components.txt"))
 Sel_PC <-  file.path(Output_Dir_Full, "Selected_Components.txt")
 
 ################################################################################
@@ -158,8 +167,9 @@ write.table(Results, file = "Diversity.tabular", sep = "\t", dec = ".", na = " "
 
 # write a table for Bray Curtis dissimilarity
 BC_mean <- Biodiv_Indicators$BCdiss
-colnames(BC_mean) <- rownames(BC_mean) <- Biodiv_Indicators$Name_Plot
-write.table(BC_mean, file = "BrayCurtis.tabular", sep = "\t", dec = ".", na = " ", row.names = F, col.names = T, quote = FALSE)
+bray_curtis <- data.frame(Name_Vector, BC_mean)
+colnames(bray_curtis) <- c("ID_Plot", bray_curtis[, 1])
+write.table(bray_curtis, file = "BrayCurtis.tabular", sep = "\t", dec = ".", na = " ", row.names = F, col.names = T, quote = FALSE)
 
 ####################################################
 # illustrate results

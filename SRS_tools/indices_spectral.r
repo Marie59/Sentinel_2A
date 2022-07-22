@@ -33,6 +33,7 @@ if (length(args) < 1) {
     source(args[6])
     indice_choice <- as.character(args[7])
     source(args[8])
+    output_raster <- as.character(args[9])
 
 }
 
@@ -84,6 +85,16 @@ for (SpIndx in names(Indices$SpectralIndices)) {
   HDR_name <- write_ENVI_header(HDR = HDR, HDRpath = get_HDR_name(Index_Path))
 }
 
+# Get the raster layer of the indice as an output
+if (output_raster == "Y") {
+raster_zip <- file.path("raster.zip")
+zip::zip(raster_zip, Index_Path)
+
+header_zip <- file.path("header.zip")
+zip::zip(header_zip, get_HDR_name(Index_Path))
+}
+
+# Writting the tabular and the plot
 spec_indices <- as.data.frame(spec_indices)
 r_pts[, indice_choice] <- spec_indices[, 3]
 write.table(r_pts, file = "Spec_Index.tabular", sep = "\t", dec = ".", na = " ", row.names = F, col.names = T, quote = FALSE)

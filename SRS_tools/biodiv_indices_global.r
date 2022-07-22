@@ -46,7 +46,7 @@ copNDVI <- raster::raster(data_raster)
 copNDVIlr <- raster::reclassify(copNDVI, cbind(252, 255, NA), right=TRUE)
 
 #Resample using raster::aggregate and a linear factor of 10
-copNDVIlr <- raster::aggregate(copNDVIlr, fact = 50)
+copNDVIlr <- raster::aggregate(copNDVIlr, fact = 20)
 #Set float numbers as integers to further speed up the calculation
 storage.mode(copNDVIlr[]) = "integer"
 
@@ -73,7 +73,7 @@ r_pts[, ber_name] <- ber_df[, 1]
 
 #Pielou's Evenness
 pie <- rasterdiv::Pielou(copNDVIlr, window = 9, np = 1)
-pie_df <- data.frame(raster::rasterToPoints(pie, spatial = T))
+pie_df <- data.frame(raster::rasterToPoints(pie))
 if (length(pie_df[, 1]) == length(r_pts[, 1])) {
   pie_name <- "Pielou"
   r_pts[, pie_name] <- pie_df[, 1]
@@ -93,7 +93,7 @@ r_pts[, prao_name] <- prao_df[, 3]
 
 #Cumulative Residual Entropy
 cre <- rasterdiv::CRE(copNDVIlr, window = 9, np = 1)
-cre_df <- data.frame(raster::rasterToPoints(cre, spatial = T))
+cre_df <- data.frame(raster::rasterToPoints(cre))
 if (length(cre_df[, 1]) == length(r_pts[, 1])) {
   cre_name <- "CRE"
   r_pts[, cre_name] <- cre_df[, 1]

@@ -25,7 +25,7 @@
     </outputs>
     <tests>
         <test>
-           <param name="input" value="112ebeea-e79c-422c-8a43-a5a8323b446b.xml"/>
+           <param name="input" value="12a0b625-9ad5-4251-a57a-305e22edef2e.xml"/>
            <output name="output" value="Metadata_validation.txt"/>
         </test>
     </tests>
@@ -41,6 +41,7 @@ Read a ISO 19139 from a file or url into an object in the geometa model.
 
 **Input description**
 
+A metadata xml file or url.
 
 +-------------+
 |   Metadata  |
@@ -52,7 +53,7 @@ Read a ISO 19139 from a file or url into an object in the geometa model.
 
 **Output**
 
-A text file saying TRUE or FALSE depending on if the xml metadata are conforme according to ISO 19139.
+A text file saying TRUE or FALSE depending on if the xml metadata are conforme according to ISO 19139. If the xml metadata is not conform it will write down where are the issues.
     ]]>    </help>
         <expand macro="SRS_S2ref"/>
 </tool>

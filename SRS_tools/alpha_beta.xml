@@ -29,18 +29,26 @@
         <requirement type="package" version="3.2.2">r-filesstrings</requirement>  
     </expand>
     <command detect_errors="exit_code"><![CDATA[ 
-        cp '$input_raster' '${input_raster.element_identifier}' &&
-        cp '$input_header' '${input_header.element_identifier}' &&
+        #if $method.type == 'envi_bil': 
+          cp '$input_raster' '${input_raster.element_identifier}' &&
+          cp '$input_header' '${input_header.element_identifier}' &&
+        #end if 
         Rscript
             '$__tool_directory__/alpha_beta.r'
-            '$input_raster.element_identifier'
-            '$input_header.element_identifier'
-            '$sel_compo'
-            #if $method.type == 'alpha_beta':
+             #if $method.type == 'envi_bil':
+              '$method.input_raster.element_identifier'
+              '$method.input_header.element_identifier'
+              ''
+            #else:
+              ''
+              ''
+              '$method.input'
+            #end if
+            #if $method_div.type == 'alpha_beta':
               'TRUE'
               'FALSE'
               'FALSE'
-            #else if $method.type == 'funct':
+            #else if $method_div.type == 'funct':
               'FALSE'
               'TRUE'
               'FALSE'
@@ -53,10 +61,20 @@
         ]]>
     </command>
     <inputs>
-        <param name="input_raster" type="data" format="bil" label="Input raster"/>
-        <param name="input_header" type="data" format="hdr" label="Input raster header"/>
-        <param name="sel_compo" type="data" format="txt" label="Input selected components"/>
         <conditional name="method">
+            <param name="type" type="select" label="In which format are your data ?">
+                <option value="zipper">The data you are using are in a zip folder Reflectance</option>
+                <option value="envi_bil">Your already have the files in ENVI BIL format</option>
+            </param>
+            <when value="zipper">
+                <param name="input" type="data" format="data" multiple="true" label="Input data"/>
+            </when>
+            <when value="envi_bil">
+                <param name="input_raster" type="data" format="bil" label="Input raster" help="It can be the raw data in bil or the PCA raster layer in bil"/>
+                <param name="input_header" type="data" format="hdr" label="Input header"/>
+            </when>
+        </conditional>
+        <conditional name="method_div">
             <param name="type" type="select" label="Alpha, beta, functional diversity and comparison plot and map" display="radio">
                 <option value="alpha_beta">Alpha and beta diversity map</option>
                 <option value="funct">Functional diversity map</option>

@@ -28,7 +28,7 @@ if (length(args) < 1) {
 }else{
     data_raster <- args[1]
     rasterheader <- args[2]
-    text_compo <- args[3]
+    data <- args[3]
     alpha_beta <- as.logical(args[4])
     funct <- as.logical(args[5])
     all <- as.logical(args[6])
@@ -38,10 +38,19 @@ if (length(args) < 1) {
 ################################################################################
 ##              DEFINE PARAMETERS FOR DATASET TO BE PROCESSED                 ##
 ################################################################################
-# expected to be in ENVI HDR  
+if (data != "") {
+  #Create a directory where to unzip your folder of data
+  dir.create("data_dir")
+  unzip(data, exdir = "data_dir")
+  # Path to raster
+  data_raster <-list.files("data_dir/results/Reflectance", pattern = "_Refl")
+  Input_Image_File <- file.path("data_dir/results/Reflectance", data_raster[1])
+  Input_Header_File <- file.path("data_dir/results/Reflectance", data_raster[2])
 
-Input_Image_File <- file.path(getwd(), data_raster, fsep = "/")
-Input_Header_File <- file.path(getwd(), rasterheader, fsep = "/")
+} else{
+  Input_Image_File <- file.path(getwd(), data_raster, fsep = "/")
+  Input_Header_File <- file.path(getwd(), rasterheader, fsep = "/")
+}
 # path for the Mask raster corresponding to image to process
 # expected to be in ENVI HDR format, 1 band, integer 8bits
 # expected values in the raster: 0 = masked, 1 = selected
@@ -96,11 +105,11 @@ Input_Mask_File <- PCA_Output$MaskPath
 
 # 3- Select principal components from the PCA raster
 # Select components from the PCA/SPCA/MNF raster
+sel_compo <- c("1\n", "2\n", "3\n", "4\n", "5\n", "6\n", "7\n", "8")
 Image_Name <- tools::file_path_sans_ext(basename(Input_Image_File))
 Output_Dir_Full <- file.path(Output_Dir, Image_Name, TypePCA, "PCA")
-data_components <- read.table(text_compo, sep = "\t", dec = ".", fill = TRUE, encoding = "UTF-8")
-write.table(data_components, paste0(Output_Dir_Full, "/Selected_Components.txt"))
-
+#data_components <- read.table(sel_compo, sep = "\t", dec = ".", fill = TRUE, encoding = "UTF-8")
+write.table(sel_compo, paste0(Output_Dir_Full, "/Selected_Components.txt"))
 Sel_PC <-  file.path(Output_Dir_Full, "Selected_Components.txt")
 
 ################################################################################
@@ -109,16 +118,6 @@ Sel_PC <-  file.path(Output_Dir_Full, "Selected_Components.txt")
 print("MAP SPECTRAL SPECIES")
 
 Kmeans_info <- biodivMapR::map_spectral_species(Input_Image_File = Input_Image_File, Output_Dir = Output_Dir, PCA_Files = PCA_Files, Input_Mask_File = Input_Mask_File, Pix_Per_Partition = Pix_Per_Partition, nb_partitions = nb_partitions, nbCPU = nbCPU, MaxRAM = MaxRAM, nbclusters = nbclusters, TypePCA = TypePCA)
-
-##Potting indices 
-spectrale_indices <- function(data, titre) {
-  graph_indices <- ggplot2::ggplot(data) +
-  ggplot2::geom_point(ggplot2::aes_string(x = data[, 2], y = data[, 3], color = data[, 1])) + ggplot2::scale_colour_gradient(low = "blue", high = "orange", na.value = "grey50") +
-  ggplot2::xlab("Longitude") + ggplot2::ylab("Latitude") +
-  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust = 1), plot.title = ggplot2::element_text(color = "black", size = 12, face = "bold")) + ggplot2::ggtitle(titre)
-  
-ggplot2::ggsave(paste0(titre, ".png"), graph_indices, width = 12, height = 10, units = "cm")
-}
 
 if (alpha_beta == TRUE | all == TRUE) {
 ## alpha

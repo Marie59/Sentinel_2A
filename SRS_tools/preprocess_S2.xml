@@ -34,16 +34,16 @@
     </inputs>
     <outputs>
         <data name="output" from_work_dir="Mission.csv" format="csv" label="Mission source"/>
-        <data name="output_refl" from_work_dir="Refl.zip" format="zip" label="Reflectance"/>
-        <data name="output_cloud" from_work_dir="Cloud.zip" format="zip" label="Cloud Mask"/>
+        <data name="output_refl" from_work_dir="Refl.zip" label="Reflectance"/>
+        <data name="output_cloud" from_work_dir="Cloud.zip" label="Cloud Mask"/>
     </outputs>
     <tests>
         <test>
-            <param name="input" value="S2A_MSIL2A_20220601T065041_N0400_R077_T40MBV_20220601T093414.zip"/>
+            <param name="input" value="S2A_MSIL2A_20200316T063621_N0214_R120_T42TUR_20200316T110820.zip"/>
             <param name="source_s2" value="SAFE"/>
             <output name="output" value="Mission.csv"/>
-            <output name="output_refl" value="Refl.zip"/>
-            <output name="output_cloud" value="Cloud.zip"/>
+            <output name="output_refl" value="Reflectance.data"/>
+            <output name="output_cloud" value="Cloud_Mask.data"/>
         </test>
     </tests>
     <help><![CDATA[
@@ -54,7 +54,7 @@ Preprocess Sentinel 2 data
 
 **What it does**
 
-The goal of this tool using the package preprocS2 is to provide a common framework for the preprocessing of Level-2A Sentinel-2 images.
+The goal of this tool (using the package preprocS2) is to provide a common framework for the preprocessing of Level-2A Sentinel-2 images (does not work yet for Level 1C).
 Sentinel-2 L2A images can be produced or obtained from various data hubs or atmospheric correction methods. PreprocS2 provides a unique function to read, crop, resample the original image directory, and write it as a raster stack.
 
 **Input description**
@@ -82,9 +82,9 @@ You need to select from where you dowloaded your data in order for the tool to k
 
 **Output**
 
-A data collection containing the refelctance data with a raster stack pile in BIL format (no extension), a header with the metadata (.hdr extension) and 2 other files in .xml.
+A zip folder containing the refelctance data with a raster stack pile in BIL format (no extension), a header with the metadata (.hdr extension) and 2 other files in .xml.
 
-A data collection containing the cloud mask with the 2 files for the raw data (.RAW) and 2 files containing the metadata (.hdr).
+A zip folder containing the cloud mask with the 2 files for the raw data (.RAW) and 2 files containing the metadata (.hdr).
     ]]>    </help>
         <expand macro="SRS_S2ref"/>
 </tool>
