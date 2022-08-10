@@ -264,6 +264,10 @@ We’ll be using data extracted from the Copernicus portal, Scihub.  First those
 >      - {% icon param-file %} *"Input data"*: `Reflectance` (output of **Preprocessing sentinel 2 data** {% icon tool %})
 >    - {% icon param-file %} *"Plots folder zip"*: `output` (Input dataset)
 >
+>    > ### {% icon comment %} Shapefiles
+>    >
+>    > Here you must provide your folder of shapefiles (at least 2 in oder to have the beta diversity).
+>    {: .comment}
 >    ***TODO***: *Check parameter descriptions*
 >
 >    ***TODO***: *Consider adding a comment or tip box*

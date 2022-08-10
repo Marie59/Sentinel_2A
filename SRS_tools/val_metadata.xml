@@ -1,4 +1,4 @@
-<tool id="SRS_metadata" name="Validate ISO 19139 metadata documents" version="@VERSION@" profile = "20.01">
+<tool id="srs_metadata" name="Validate ISO 19139 metadata documents" version="@VERSION@" profile = "20.01">
     <description>from files or Urls.</description>
     <macros>
         <import>macro.xml</import>
@@ -55,5 +55,5 @@ A metadata xml file or url.
 
 A text file saying TRUE or FALSE depending on if the xml metadata are conforme according to ISO 19139. If the xml metadata is not conform it will write down where are the issues.
     ]]>    </help>
-        <expand macro="SRS_S2ref"/>
+        <expand macro="SRS_metaref"/>
 </tool>

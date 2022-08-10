@@ -1,4 +1,4 @@
-<tool id="SRS_preprocess_S2" name="Preprocessing sentinel 2 data" version="@VERSION@" profile = "20.01">
+<tool id="srs_preprocess_s2" name="Preprocess sentinel 2 data" version="@VERSION@" profile = "20.01">
     <description>read, crop, resample and write it as a raster stack.</description>
     <macros>
         <import>macro.xml</import>
@@ -34,16 +34,24 @@
     </inputs>
     <outputs>
         <data name="output" from_work_dir="Mission.csv" format="csv" label="Mission source"/>
-        <data name="output_refl" from_work_dir="Refl.zip" label="Reflectance"/>
-        <data name="output_cloud" from_work_dir="Cloud.zip" label="Cloud Mask"/>
+        <data name="output_refl" from_work_dir="Refl.zip" format="zip" label="Reflectance"/>
+        <data name="output_cloud" from_work_dir="Cloud.zip" format="zip" label="Cloud Mask"/>
     </outputs>
     <tests>
         <test>
             <param name="input" value="S2A_MSIL2A_20200316T063621_N0214_R120_T42TUR_20200316T110820.zip"/>
             <param name="source_s2" value="SAFE"/>
             <output name="output" value="Mission.csv"/>
-            <output name="output_refl" value="Reflectance.data"/>
-            <output name="output_cloud" value="Cloud_Mask.data"/>
+            <output name="output_refl">
+                <assert_contents>
+                    <has_size value="165252823" delta="100"/>
+                </assert_contents>
+            </output>
+            <output name="output_cloud">
+                <assert_contents>
+                    <has_size value="362095" delta="100"/>
+                </assert_contents>
+            </output>
         </test>
     </tests>
     <help><![CDATA[
