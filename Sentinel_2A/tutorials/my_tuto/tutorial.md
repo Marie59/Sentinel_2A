@@ -16,6 +16,7 @@ key_points:
 - Remote sensing data
 - Biodiversity indicators
 contributors:
+- mariejosse
 - yvanlebras
 
 ---
@@ -26,8 +27,34 @@ contributors:
 
 <!-- This is a comment. -->
 
-This tutorial will guide you on getting Sentinel 2A data and processing them in order to calculate and visualize biodiversity indicators.
-We’ll be using data extracted from the Copernicus portal, Scihub.  First those data will be reformated. We’ll explore this dataset in the view of making biodiversity analyses so we will compute alpha and beta indicators, calculate Shannon, Hill and others indices and finally plot how the data is distributed through space and time, etc … .
+This tutorial will guide you on getting Sentinel 2A data and processing them in order to calculate and visualize biodiversity indicators. This workflow made of 6 tools will allow you to explore Sentinel 2 data in the view of making biodiversity analyses.
+So we will compute biodieversity and spectral indices and finally plot how the data is distributed through space and time, etc … .
+=> mettre le blabla sur l'importance de combiner plusieurs outils utiliser rapport et snippet descripttion reflectance
+
+> ### {% icon details %} Definition of reflectance
+>
+>
+>
+{: .details}
+
+![Sentinel 2 toolsuite workflow](../../images/Sentinel_2.png "Sentinel 2 toolsuite workflow")
+
+Each part of this workflow has elementary steps :
+ - **A first tool** to preprocess Sentinel 2 data:
+   - Preprocess Sentinel 2 data
+ - **A second tool** to compute spectral indices:
+   - Spectral indices 
+   - EBV
+ - **A third tool** to compute biodiversity indicators
+   - For Canopy
+   - More global 
+
+> ### {% icon details %} Details about Spectral indices
+>
+>
+{: .details}
+
+In this tutorial, we'll be working on Sentinel 2A data extracted Sentinel 2A from the Copernicus portal, Scihub.  First those data will be reformated. After pre-processing to fit the input format of the tools, we'll see how to calculate biodiversity metrics.
 
 > ### Agenda
 >
@@ -38,7 +65,9 @@ We’ll be using data extracted from the Copernicus portal, Scihub.  First those
 >
 {: .agenda}
 
-## Get data
+## Upload and pre-processing of the data
+
+This first step consist of downloading and properly prepare the data to use it in Sentinel 2 toolsuite.
 
 > ### {% icon hands_on %} Hands-on: Data upload
 >
@@ -48,8 +77,9 @@ We’ll be using data extracted from the Copernicus portal, Scihub.  First those
 >    [PEPS]({{ https://peps.cnes.fr/rocket/#/search?maxRecords=50&page=1 }} :
 >
 >    You will have to to create an account for either of these platform. 
->    Select Sentinel 2 and choose the Product typE "S2MSI2A".
->    You need download a zip folder. Keep it that way. 
+>    Select Sentinel 2 and choose the Product type "S2MSI2A".
+![Scihub portal](../../images/Scihub.png "Scihub portal]")
+>    This an example of the Copernicus portal, Scihub. You need to download a zip folder. Keep it that way. 
 > 3. Upload the zip folder
 >
 > ### {% icon tip %} Tip: Importing data from your computer
