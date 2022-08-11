@@ -1,0 +1,103 @@
+<tool id="srs_veget_phenology" name="Vegetation Phenology" version="@VERSION@" profile = "20.01">
+    <description>with the start of the vegetation active period</description>
+    <macros>
+        <import>macro.xml</import>
+    </macros>
+    <requirements>
+        <requirement type="package" version="3.5_15">r-raster</requirement>
+        <requirement type="package" version="1.5_29">r-rgdal</requirement>
+        <requirement type="package" version="1.4_7">r-sp</requirement>
+        <requirement type="package" version="3.3.6">r-ggplot2</requirement> 
+    </requirements>
+    <command detect_errors="exit_code"><![CDATA[ 
+        #import re 
+          #set input_raster_identifier = re.sub('[^\s\w\-]', '_', str($input_raster.element_identifier)) 
+          #set input_header_identifier = re.sub('[^\s\w\-]+[^.hdr]', '_', str($input_header.element_identifier)) 
+          ln '${input_raster}' '${input_raster_identifier}' &&
+          ln '${input_header}' '${input_header_identifier}' &&
+        Rscript
+            '$__tool_directory__/veget_pheno.r'
+            '$choice'
+            '$input_raster_identifier' 
+            '$input_header_identifier'
+            '$input_tab'
+            '$__tool_directory__/functions.r'
+            '$output_ebv'
+            '$plots_png'
+        ]]>
+    </command>
+    <inputs>
+        <param name="choice" type="select" label="Is this for coniferous trees or deciduous vegetation ?" help="For coniferous you need to choose NDSI (Normalized Difference Snow Index) for deciduous vegetation choose NDWI (Normalized Difference Water Index)." display="radio">
+            <option value="NDSI">NDSI</option>
+            <option value="NDWI">NDWI</option>
+        </param>
+        <param name="input_raster" type="data" format="bil" label="Input raster" />
+        <param name="input_header" type="data" format="hdr" label="Input header"/>
+        <param name="input_tab" type="data" format="tabular" label="Input tabular"/>
+    </inputs>
+    <outputs>
+        <data name="output_ebv" from_work_dir="veget_pheno.tabular" format="tabular" label="Vegetation phenology tabular">
+        </data>
+        <collection type="list" name="plots_png" label="Vegetation phenology plots">
+            <discover_datasets pattern="(?P&lt;designation&gt;.+)\.png" visible="false" format="png"/>
+        </collection>
+    </outputs>
+    <tests>
+        <test>
+            <param name="choice" value="NDSI"/>
+            <param name="input_raster" value="S2A_Subset"/>
+            <param name="input_header" value="S2A_Subset.hdr"/>
+            <param name="input_tab" value="1"/>
+            <output name="output_ebv">
+                <assert_contents>
+                    <has_n_lines n="2501"/>
+                </assert_contents>
+            </output>
+            <output_collection name="plots_png" type="list" count="1"/>
+        </test>
+    </tests>
+    <help><![CDATA[
+=============================
+Computes Vegetation Phenology 
+=============================
+
+
+**What it does**
+
+This tool aims to calculate the start of the vegetation active period (VAP). It is defined as the day when coniferous trees start to photosynthesize and for deciduous vegetation as the day when trees unfold new leaves in spring. It is an EBV from https://portal.geobon.org/ebv-detail?id=10.
+
+
+**Input description**
+
+It expects an image file as input, with a specific data format. ENVI HDR image with BIL interleave required.
+The image is an ENVI raster including :
+
+- A binary file (which has no extension here).
+
+- A header file (with .hdr extension).
+
+The header file is a text file including all necessary metadata which can be read with a text editor. It includes image dimensions, projection, and the name and central wavelength for each spectral band.
+
+- A tabular with either the values of NDSI or NDWI depending on the type of vegetation. 
+
+In order to get such input we advise to use the tool compute spectral indices and choose to compute the right indices. If you did so you can directly enter the different corresponding output from this tool.
+
+⚠️ If you do not use this tool make sure that your data are respectively in bil and hdr format in the datatypes.
+
++--------------+----------+---------------+
+|      BIL     | ENVI HDR |    Tabular    |
++==============+==========+===============+
+| raster stack | Metadata |     data      |
++--------------+----------+---------------+
+|      ...     |    ...   |      ...      |
++--------------+----------+---------------+
+
+**Output**
+
+- One tabular with 3 columns longitude, latitude columns and one for the VAP
+
+- One png graph.
+
+    ]]>    </help>
+        <expand macro="SRS_vegetpheno"/>
+</tool>
