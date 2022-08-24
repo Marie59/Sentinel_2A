@@ -1,11 +1,10 @@
-<tool id="srs_diversity_maps" name="Map diversity" version="@VERSION@" profile = "20.01">
-    <description>from  remote sensing data</description>
+<tool id="srs_process_data" name="Compare diversity indicators" version="@VERSION@" profile = "20.01">
+    <description>with remote sensing data</description>
     <macros>
         <import>macro.xml</import>
     </macros>
     <expand macro="SRS_requirements">
         <requirement type="package" version="0.62.0">r-matrixStats</requirement> 
-        <requirement type="package" version="0.51.2">r-rastervis</requirement>
         <requirement type="package" version="1.25.0">r-future</requirement>
         <requirement type="package" version="1.9.0">r-future.apply</requirement>
         <requirement type="package" version="3.3.6">r-ggplot2</requirement>
@@ -28,9 +27,9 @@
         <requirement type="package" version="1.0">r-dissutils</requirement>  
         <requirement type="package" version="3.2.2">r-filesstrings</requirement>  
     </expand>
-    <command detect_errors="exit_code"><![CDATA[ 
+    <command detect_errors="exit_code"><![CDATA[
         #import re 
-        #if $method.origin == 'envi_bil': 
+        #if $method.type == 'envi_bil': 
           #set input_raster = $method.input_raster
           #set input_raster_identifier = re.sub('[^\s\w\-]', '_', str($input_raster.element_identifier)) 
           #set input_header = $method.input_header
@@ -39,8 +38,8 @@
           ln '${input_header}' '${input_header_identifier}' &&
         #end if
         Rscript
-            '$__tool_directory__/alpha_beta.r'
-             #if $method.origin == 'envi_bil':
+            '$__tool_directory__/comparison_div.r'
+             #if $method.type == 'envi_bil':
               '$input_raster_identifier' 
               '$input_header_identifier'
               ''
@@ -49,37 +48,18 @@
               ''
               '$method.input'
             #end if
-            #if $method_div.type == 'alpha':
-              'TRUE'
-              'FALSE'
-              'FALSE'
-              'FALSE'
-            #else if $method_div.type == 'beta':
-              'FALSE'
-              'TRUE'
-              'FALSE'
-              'FALSE'
-            #else if $method_div.type == 'funct':
-              'FALSE'
-              'FALSE'
-              'TRUE'
-              'FALSE'
-            #else:
-              'FALSE'
-              'FALSE'
-              'FALSE'
-              'TRUE'
-            #end if
+            '$input_plot'
+            '$choice'
             '$__tool_directory__/functions.r'
-            '$output_alpha'
+            '$typepca'
+            '$output_div'
             '$output_beta'
-            '$output_funct'
             '$plots'
         ]]>
     </command>
     <inputs>
         <conditional name="method">
-            <param name="origin" type="select" label="In which format are your data ?">
+            <param name="type" type="select" label="In which format are your data ?">
                 <option value="zipper">The data you are using are in a zip folder Reflectance</option>
                 <option value="envi_bil">Your already have the files in ENVI BIL format</option>
             </param>
@@ -91,51 +71,45 @@
                 <param name="input_header" type="data" format="hdr" label="Input header"/>
             </when>
         </conditional>
-        <conditional name="method_div">
-            <param name="type" type="select" label="Alpha, beta, functional diversity and comparison plot and map" display="radio">
-                <option value="alpha">Alpha diversity map</option>
-                <option value="beta">Beta diversity map</option>
-                <option value="funct">Functional diversity map</option>
-                <option value="all">All of the above</option>
-             </param>
-        </conditional>
+        <param name="input_plot" type="data" format="data" label="Plots folder zip"/>
+        <param name="choice" type="select" label="Do you want to compute beta diversity (needs mutliple locations) ?" display="radio">
+            <option value="Y">Yes</option>
+            <option value="N">No</option>
+        </param>
+        <param name="typepca" type="select" label="Do you want to do a PCA or a SPCA ?" display="radio" help="If you choose PCA there is no rescaling of the data as oppposed as if you choose SPCA">
+            <option value="SPCA">SPCA</option>
+            <option value="PCA">PCA</option>
+        </param>
     </inputs>
     <outputs>
-        <data name="output_alpha" from_work_dir="alpha.tabular" format="tabular" label="Alpha diversity">
-            <filter> method_div['type'] == 'alpha' or  method_div['type'] == 'all'</filter>
+        <data name="output_div" from_work_dir="Diversity.tabular" format="tabular" label="Global diversity">
         </data>
-        <data name="output_beta" from_work_dir="beta.tabular" format="tabular" label="Beta diversity">
-            <filter> method_div['type'] == 'beta' or  method_div['type'] == 'all'</filter>
+        <data name="output_beta" from_work_dir="BrayCurtis.tabular" format="tabular" label="Bray Curtis">
+            <filter>choice == 'Y'</filter>
         </data>
-        <data name="output_funct" from_work_dir="Functionnal.tabular" format="tabular" label="Functionnal diversity">
-            <filter> method_div['type'] == 'funct' or  method_div['type'] == 'all'</filter>
-        </data>
-        <collection type="list" name="plots" label="${method_div.type} plot">
+        <collection type="list" name="plots" label="Comparison plot">
             <discover_datasets pattern="(?P&lt;designation&gt;.+)\.png" visible="false" format="png"/>
+            <filter>choice =='Y'</filter>
         </collection>
     </outputs>
     <tests>
         <test>
-            <param name="origin" value="envi_bil"/>
+            <param name="type" value="envi_bil"/>
             <param name="input_raster" value="S2A_Subset"/>
             <param name="input_header" value="S2A_Subset.hdr"/>
-            <param name="type" value="all"/>
-            <output name="output_alpha">
+            <param name="input_plot" value="S2A_T33NUD_Plots.zip"/>
+            <param name="choice" value="Y"/>
+            <output name="output_div">
                 <assert_contents>
-                    <has_n_columns n="3"/>
+                    <has_n_lines n="25"/>
                 </assert_contents>
             </output>
             <output name="output_beta">
                 <assert_contents>
-                    <has_n_columns n="3"/>
+                    <has_n_lines n="25"/>
                 </assert_contents>
             </output>
-            <output name="output_funct">
-                <assert_contents>
-                    <has_n_columns n="3"/>
-                </assert_contents>
-            </output>
-            <output_collection name="plots" type="list" count="3"/>
+            <output_collection name="plots" type="list" count="1"/>
         </test>
     </tests>
     <help><![CDATA[
@@ -148,7 +122,7 @@ Process satellite remote sensing data to produce biodiversity indicators
 
 Féret and Asner (2014) developed a method for **tropical forest** diversity mapping based on very high spatial resolution airborne imaging spectroscopy.
 
-The goal of this tool using the package biodivMapR is to produce (spectral) diversity maps based on (optical) images. 
+The goal of this tool using the package biodivMapR is to compute diversity indices over each spatial polygon of a shapefile of plots, if available, in order to compare field inventories with diversity indices estimated from remotely-sensed images.
 
 **Input description**
 
@@ -163,19 +137,24 @@ The header file is a text file including all necessary metadata which can be rea
 
 In order to get such input we advise to use the tool preprocessing sentinel 2 data. 
 
-+--------------+----------+
-|      BIL     | ENVI HDR |
-+==============+==========+
-| raster stack | Metadata |
-+--------------+----------+
-|      ...     |    ...   |
-+--------------+----------+
++--------------+----------+--------------+
+|      BIL     | ENVI HDR |  Shapefiles  |
++==============+==========+==============+
+| raster stack | Metadata |  plots.zip   |
++--------------+----------+--------------+
+|      ...     |    ...   |      ...     |
++--------------+----------+--------------+
 
 **Output**
 
-- Three tabulars : alpha, beta, functionnal each of them with 3 colomns latitude, longitude and the indice.
+- Two tabulars : 
+    - One matrix for Bray-Curtis indicator
+    - One table for the following indicators; Species richness, shannon, fisher, simpson, richness, eveness, divergence
 
-- Three png graph for each indice 
+- One comparison png plot in the Pcoa space that summarizes α- and β-diversity in scatterplots and illustrates that the combination of the three components computed with PCoA allows proper differentiation among vegetation types:
+    - PCoA#1 allows differentiating medium and high diversity forests from low diversity forest and low vegetation, but does not discriminate medium and high diversity forests.
+    - PCoA#2 allows differentiating low diversity forest from medium/high diversity forests and low vegetation
+    - PCoA#3 allows differentiating medium diversity forests from high diversity forests and low vegetation.
 
     ]]>    </help>
         <expand macro="SRS_BDMRref"/>

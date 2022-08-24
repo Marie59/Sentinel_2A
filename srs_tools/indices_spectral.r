@@ -56,10 +56,7 @@ if (data != "") {
   refl <- raster::brick(data_raster)
   refl2 <- raster::raster(data_raster)
 }
-# get raster band name and clean format. Expecting band name and wavelength to be documented in image
-hdr_refl <- read_envi_header(get_hdr_name(data_raster))
-sensorbands <- hdr_refl$wavelength
-# compute a set of spectral indices defined by indexlist from S2 data
+# get raster band name and clean format. Expecting band name and wav
 # reflFactor = 10000 when reflectance is coded as INT16
 refl <- raster::aggregate(refl, fact = 10)
 
@@ -67,19 +64,19 @@ refl <- raster::aggregate(refl, fact = 10)
 refl2 <- raster::aggregate(refl2, fact = 10)
 r_pts <- convert_raster(refl2)
 table_ind <- r_pts
-# create directory for Spectral indices
-results_site_path <- "RESULTS"
-si_path <- file.path(results_site_path, "SpectralIndices")
+# create directory for Spectralelength to be documented in image
+hdr_refl <- read_envi_header(get_hdr_name(data_raster))
+sensorbands <- hdr_refl$wavelength
+# compute a set of spectral indices defined by indexlist from S2 data indices
+si_path <- file.path("SpectralIndices")
 dir.create(path = si_path, showWarnings = FALSE, recursive = TRUE)
 # Save spectral indices
 
-#for (ind in indice_choice) {
 indices <- lapply(indice_choice, function(x) {
   indices_list <- computespectralindices_raster(refl = refl, sensorbands = sensorbands,
                                                   sel_indices = x,
                                                   reflfactor = 10000, stackout = FALSE)
 
-#index_list <- lapply(indice_choice, function(SpIndx){
   index_path <- file.path(si_path, paste(basename(data_raster), "_", x, sep = ""))
   spec_indices <- stars::write_stars(stars::st_as_stars(indices_list$spectralindices[[1]]), dsn = index_path, driver = "ENVI", type = "Float32")
 
@@ -106,10 +103,3 @@ if (length(indice_choice) == 1) {
 write.table(table_ind, file = "Spec_Index.tabular", sep = "\t", dec = ".", na = " ", row.names = FALSE, col.names = TRUE, quote = FALSE)
 
 # Get the raster layer of the indice as an output
-if (output_raster == "Y") {
-raster_zip <- file.path("raster.zip")
-zip::zip(raster_zip, index_path)
-
-header_zip <- file.path("header.zip")
-zip::zip(header_zip, get_HDR_name(index_path))
-}

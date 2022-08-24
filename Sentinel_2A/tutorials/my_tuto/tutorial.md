@@ -28,11 +28,16 @@ contributors:
 <!-- This is a comment. -->
 
 This tutorial will guide you on getting Sentinel 2A data and processing them in order to calculate and visualize biodiversity indicators. This workflow made of 6 tools will allow you to explore Sentinel 2 data in the view of making biodiversity analyses.
-So we will compute biodieversity and spectral indices and finally plot how the data is distributed through space and time, etc … .
-=> mettre le blabla sur l'importance de combiner plusieurs outils utiliser rapport et snippet descripttion reflectance
+
+Spatial diversity measurements should not replace in situ biodiversity data, but rather complement existing data and approaches. Spatial diversity estimates are currently based on long time scales, allowing more general predictions about rates of change in diversity. In practice, spatial data incorporate information on surface properties, including functional aspects, taxonomy, phylogeny and genetic diversity. 
+
+The tools explained here are useful for observing variations in spatial and temporal ecosystem properties given the intrinsic relationship between spatial variations in ecosystems and pixel values of spectral signals. A single measurement cannot provide a complete description of all the different aspects of ecosystem heterogeneity. Therefore, the combination of multiple tools in a Galaxy-Ecology workflow offers multiple approaches to unravel the complexity of ecosystem heterogeneity in space and time. 
+
+So, we will compute biodiversity and spectral indices and finally plot how the data is distributed through space and time.
 
 > ### {% icon details %} Definition of reflectance
 >
+> The reflectance is a porportion on reflected light on an area. It's the ration between the electromagnetic incident wave on the area and the reflected wave. It's often a percentage between reflected intensity and inicident intensity assumed as energy quantity.
 >
 >
 {: .details}
@@ -51,6 +56,10 @@ Each part of this workflow has elementary steps :
 
 > ### {% icon details %} Details about Spectral indices
 >
+>Spectral indices are used to highlight particular features or properties of the earth's surface, e.g. vegetation, soil, water. They are developed on the basis of the spectral properties of the object of interest.   
+>
+>Knowledge of the leaf cell, plant structure, state, condition and spectral properties is essential to perform vegetation analysis using remote sensing data.   
+>Spectral indices dedicated to vegetation analysis are developed on the basis that healthy vegetation reflects strongly in the near infrared (NIR) spectrum while absorbing strongly in the visible red.   
 >
 {: .details}
 
@@ -163,6 +172,13 @@ This first step consist of downloading and properly prepare the data to use it i
 >    >
 >    > You can choose whichever indice you want
 >    {: .comment}
+> ### {% icon details %} Spectral indices and Essential Biodiversity Variables 
+>
+>Remotely sensed diversity is consistent with most of the essential spatially constrained biodiversity variables proposed by Skidmore et al. (2015). This highlights the need for increased dialogue and collaboration between the biodiversity monitoring community and the remote sensing community to make satellite remote sensing a tool of choice for conservation. Increased dialogue is also essential within the biodiversity monitoring community to achieve this. From this point of view multiple Satellite Remote Sensing EBV (SRS EBV) were created.
+>Some of the indices proposed here will allow you to compute  SRS EBV.
+>For instance it allows you to compute one of GEO BON EBV 'Canopy Chlorophyll Content' (https://portal.geobon.org/ebv-detail?id=13). This EBV is computed by GEO BON on the Netherlands, here you can compute it on which ever Sentinel 2 data you want by chosing to calculate the indice CCI.
+>
+{: .details}
 >
 {: .hands_on}
 
