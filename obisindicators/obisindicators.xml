@@ -1,11 +1,11 @@
-<tool id="SRS_obisindicators" name="Ocean biodiversity indicators" version="@VERSION@" profile = "20.01">
-    <description>from remote sensing data</description>
+<tool id="obisindicators" name="Ocean biodiversity indicators" version="@VERSION@" profile = "20.01">
+    <description>from OBIS</description>
     <macros>
         <import>macro.xml</import>
     </macros>
     <expand macro="topic"/>
     <expand macro="SRS_requirements">
-            <requirement type="package" version="2.0.4">r-dggridR</requirement>
+            <!--<requirement type="package" version="3.0.0">r-dggridR</requirement>-->
             <requirement type="package" version="2.0.3">r-magrittr</requirement>
             <requirement type="package" version="1.0.9">r-dplyr</requirement>
             <requirement type="package" version="1.0_7">r-sf</requirement>
@@ -100,26 +100,28 @@ Calculates biodiversity indicators and maps them
 **What it does**
 
 
-This tool alculates the number of records, species richness, Simpson index, Shannon index, Hurlbert index (n = 50), and Hill numbers for each cell.
+This tool calculates the number of records, species richness, Simpson index, Shannon index, Hurlbert index (n = 50), and Hill numbers for each cell.
 
 
 **Input description**
 
-A tabular file with observation data. Must at least contain three columns temporal referential (year, date, ...), numerical factor.
 
-+----------+
-|   CRS    |
-+==========+
-|   crs    |
-+----------+
-|  ...     |
-+----------+
+A tabular file with observation data. Must at least contain four columns longitude, latitude, taxon (any taxon level : species, family, ...) and records.
+
+
++----------+-----------+---------+------------+
+| latitude | longitude |  taxon  |  records   |
++==========+===========+=========+============+
+| lat      |long       | taxonID |      4     |
++----------+-----------+---------+------------+
+|  ...     |    ...    |   ...   |     ...    |
++----------+-----------+---------+------------+
 
 **Output**
 
-A text output that summarizes in a tabular the results of all the indicators.
+- A text output that summarizes in a tabular the results of all the indicators.
 
-Multiple PNG files representing the indicators on a map (according to the choice of map made).
+- Multiple PNG files representing the indicators on a map (according to the choice of map made).
     ]]>    </help>
         <expand macro="SRS_bibref"/>
 </tool>

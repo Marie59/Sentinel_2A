@@ -13,6 +13,7 @@
 #               viridis
 #               dggridr
 library(magrittr)
+remotes::install_github("r-barnes/dggridR")
 #####Load arguments
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -21,7 +22,7 @@ args <- commandArgs(trailingOnly = TRUE)
 
 if (length(args) < 4) {
     stop("This tool needs at least 4 argument : longitude, latitude, species and number of records")
-}else{
+}else {
     raster <- args[1]
     hr <- args[2]
     sep <- as.character(args[3])
@@ -33,11 +34,11 @@ if (length(args) < 4) {
     source(args[9])
     source(args[10])
     source(args[11])
-}   
+}
 
 if (hr == "false") {
   hr <- FALSE
-}else{
+}else {
   hr <- TRUE
 }
 
@@ -71,20 +72,19 @@ occ$cell <- dggridR::dgGEO_to_SEQNUM(dggs, occ$decimalLongitude, occ$decimalLati
 
 #Perform the calculation on species level data
 idx <- calc_indicators(occ)
-write.table(idx, file = "Index.csv", sep = ",", dec = ".", na = " ", col.names = T, row.names = F, quote = FALSE)
+write.table(idx, file = "Index.csv", sep = ",", dec = ".", na = " ", col.names = TRUE, row.names = FALSE, quote = FALSE)
 
-#dd cell geometries to the indicators table (idx)
-grid <- dggridR::dgcellstogrid(dggs, idx$cell) %>%
-  sf::st_wrap_dateline(data_sf) %>%  
-  dplyr::left_join(
+#add cell geometries to the indicators table (idx)
+grid_idx <- sf::st_wrap_dateline(dggridR::dgcellstogrid(dggs, idx$cell))
+colnames(grid_idx) <- c("cell", "geometry")
+
+grid <- dplyr::left_join(grid_idx,
     idx,
     by = "cell")
 
-#grid <- dplyr::left_join(dplyr::rename(sf::st_wrap_dateline(dggridR::dgcellstogrid(dggs, idx$cell)), cell = seqnum), idx, by = "cell")
-
 #Plot maps of indicators
 #Let’s look at the resulting indicators in map form.
-# ES(50)
+#Indice ES(50)
 es_50_map <- gmap_indicator(grid, "es", label = "ES(50)", crs = crs)
 es_50 <- ggplot2::ggsave("ES_50.png", es_50_map, scale = 0.38, width = 12, height = 7, units = "in", dpi = 300, limitsize = TRUE)
 
