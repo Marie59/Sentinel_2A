@@ -16,7 +16,7 @@
 #               rgdal
 #               ggplot2
 #               gridExtra
-remotes::install_github("jbferet/biodivMapR")
+##remotes::install_github("jbferet/biodivMapR")
 #####Load arguments
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -61,7 +61,7 @@ if (data_raster == "") {
 ##                              PROCESS IMAGE                                 ##
 ################################################################################
 # 1- Filter data in order to discard non vegetated / shaded / cloudy pixels
-
+library(biodivmapr)
 print("PERFORM PCA ON RASTER")
 pca_output <- biodivMapR::perform_PCA(Input_Image_File = input_image_file, Input_Mask_File = input_mask_file,
                           Output_Dir = output_dir, TypePCA = typepca, FilterPCA = filterpca, nbCPU = nbcpu, MaxRAM = maxram)

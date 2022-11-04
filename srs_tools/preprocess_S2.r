@@ -32,6 +32,7 @@ if (length(args) < 1) {
     data <- args[1]
     source(args[2])
     data_source <- as.character(args[3])
+    sat_type <- as.character(args[4])
 }
 
 ##____________________________________________________________________##
@@ -113,7 +114,7 @@ if (data_source == "SAFE") {
 }
 
 save_data <- save_reflectance_s2(s2_stars = s2obj$s2_stack, refl_path = refl_path,
-                               s2sat = NULL, tile_s2 = tile_s2, dateacq_s2 = dateacq_s2,
+                               s2sat = sat_type, tile_s2 = tile_s2, dateacq_s2 = dateacq_s2,
                                format = "ENVI", datatype = "Int16", mtd = s2obj$s2_bands$metadata, mtd_msi = s2obj$s2_bands$metadata_MSI)
 
 zip_files <- file.path("Refl.zip")

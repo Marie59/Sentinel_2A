@@ -16,7 +16,7 @@
 #               rgdal
 #               ggplot2
 #               gridExtra
-remotes::install_github("jbferet/biodivMapR")
+## remotes::install_github("jbferet/biodivMapR")
 #####Load arguments
 
 args <- commandArgs(trailingOnly = TRUE)

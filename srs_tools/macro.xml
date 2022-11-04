@@ -1,21 +1,28 @@
 <macros>
-    <token name="@VERSION@">0.0.0</token>
+    <token name="@VERSION@">0.0.1</token>
     <xml name="SRS_requirements">
         <requirements>
-           <requirement type="package" version="2.11.0">r-R.utils</requirement>
-           <requirement type="package" version="3.5_15">r-raster</requirement>
-           <requirement type="package" version="1.0_7">r-sf</requirement>
-           <requirement type="package" version="1.4_7">r-sp</requirement>
-           <requirement type="package" version="1.5_29">r-rgdal</requirement>
-           <requirement type="package" version="0.5_9">r-rgeos</requirement>
-           <requirement type="package" version="0.5_5">r-stars</requirement>
-           <requirement type="package" version="1.4.0">r-stringr</requirement>
-           <yield/>
+            <requirement type="package" version="4.2.1">r-base</requirement>
+            <requirement type="package" version="2.12.0">r-r.utils</requirement>
+            <requirement type="package" version="1.5_32">r-rgdal</requirement>
+            <requirement type="package" version="0.5_9">r-rgeos</requirement>
+            <requirement type="package" version="0.5_5">r-stars</requirement>
+            <requirement type="package" version="1.4.1">r-stringr</requirement>
+            <requirement type="package" version="1.9.0">r-biodivmapr</requirement>
+            <requirement type="package" version="0.34">r-xfun</requirement>
+            <requirement type="package" version="0.51.2">r-rastervis</requirement>
+            <requirement type="package" version="3.3.6">r-ggplot2</requirement>
+            <requirement type="package" version="2.11.0">r-mapview</requirement>
+            <requirement type="package" version="2.3">r-gridextra</requirement>
+            <requirement type="package" version="3.0.0">r-emstreer</requirement>
+            <requirement type="package" version="3.2.3">r-filesstrings</requirement>
+            <!--requirement type="package" version="9.0.1">proj</requirement-->
+            <yield/>
         </requirements>
     </xml>
     <xml name="SRS_input">
-       <param name="input" type="data" format="tabular, csv, txt" label="Input table"/>
-       <param name="colnames" type="boolean" label="First line is a header line" checked="true"/>    
+       <param name="input" type="data" format="tabular,csv,txt" label="Input table"/>
+       <param name="colnames" type="boolean" label="First line is a header line" checked="true"/>
     </xml>
     <xml name="SRS_bibref">
        <citations>
