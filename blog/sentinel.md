@@ -22,6 +22,12 @@ Therefore, it's necessary to strengthen the dialogue and collaboration between t
 
 SRS offers an opportunity to expand the range of data that can support biodiversity monitoring efforts worldwide. It provides global coverage and enables the collection of multiple spatial and temporal data.
 
+<div class="float-right">
+
+![](tree.png)
+
+</div>
+
 ## Usefulness
 
 These dialogues between different scientific communities ( biodiversity and SRS) and within a single community must be supported by open source software solutions. These freely available data and software are of vital importance in facilitating the development of methodologies that are accessible to all, regardless of financial means.
