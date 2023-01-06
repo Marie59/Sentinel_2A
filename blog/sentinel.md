@@ -16,7 +16,7 @@ date: "2023-01-16"
 
 </div>
 
-Airborne observation of Earth and satellite systems is particularly important for biodiversity monitoring. It allows the production of maps for spatially explicit modeling and monitoring, at local to global scales.
+Airborne observation of Earth and satellite systems is one of the emerging technologies for biodiversity monitoring. It allows the production of maps for spatially explicit modeling and monitoring, at local to global scales.
 
 Therefore, it's necessary to strengthen the dialogue and collaboration between the biodiversity monitoring and the remote sensing community so that satellite remote sensing (SRS) becomes a usefull tool for conservation. Increased dialogue is also essential within the biodiversity monitoring community to achieve this. Agreement on what is most urgently needed, given the range of possibilities, is crucial for developing SRS-based products that can be used by policymakers and international conventions.
 
