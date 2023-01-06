@@ -18,7 +18,7 @@ date: "2023-01-16"
 
 Airborne observation of Earth and satellite systems is one of the emerging technologies for biodiversity monitoring.
 
-![](https://onlinelibrary.wiley.com/cms/asset/5b12e0bd-4193-43a8-9e2b-e8e494727021/brv12359-fig-0002-m.jpg?raw=true)
+![](5b12e0bd-4193-43a8-9e2b-e8e494727021/brv12359-fig-0002-m.jpg)
 Kissling et al 2018, "Building essential biodiversity variables (EBVs) of species distribution and abundance at a global scale", https://doi.org/10.1111/brv.12359
 
 It allows the production of maps for spatially explicit modeling and monitoring, at local to global scales.
