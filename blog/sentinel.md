@@ -31,7 +31,7 @@ SRS offers an opportunity to expand the range of data that can support biodivers
 ## Usefulness
 
 These dialogues between different scientific communities ( biodiversity and SRS) and within a single community must be supported by open source software solutions. These freely available data and software are of vital importance in facilitating the development of methodologies that are accessible to all, regardless of financial means.
-The combination of freely accessible data and open source software allows for the production of standardized and transparent products, improving the chances of preserving these datasets in the long term and being able to reuse them.
+The combination of freely accessible data and open source softwares allows for the production of standardized and transparent products, improving the chances of preserving these datasets in the long term and being able to reuse them.
 
 # A full workflow for Sentinel 2 data on Galaxy
 
@@ -59,7 +59,7 @@ The R package Rasterdiv used in one of the [tool]() provides an unprecedented su
 
 Optical remote sensing has shown great potential for estimating several components of biodiversity, even for highly complex ecosystems such as tropical forests. Operational methods should require minimal supervision and not rely on extensive ground data collection. These techniques ensure applicability even in remote locations without ground access in tropical environments.
 
-M. Féret has developed a method that meets these requirements and has validated its performance for mapping tropical forest diversity from high spatial resolution airborne imaging spectroscopy. The BiodivMapR package is an adaptation of the method proposed by M. Féret to process Sentinel-2 data, and aims to provide operational [tools]() to ecologists and remote sensing communities to accelerate and facilitate their ability to evaluate existing techniques based on abundant remote sensing data.
+M. Féret has developed a method that meets these requirements and has validated its performance for mapping tropical forest diversity from high spatial resolution airborne imaging spectroscopy. The [BiodivMapR](https://jbferet.github.io/biodivMapR/index.html) R package is an adaptation of the method proposed by M. Féret to process Sentinel-2 data, and aims to provide operational [tools]() to ecologists and remote sensing communities to accelerate and facilitate their ability to evaluate existing techniques based on abundant remote sensing data.
 
 <div>
 
