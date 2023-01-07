@@ -40,7 +40,7 @@ The combination of freely accessible data and open source softwares allows for t
 
 # A full workflow for Sentinel 2 data on Galaxy
 
-This workflow goes from the dowloading and pre-processing of Sentinel 2 data to the production of biodiversity indicators.
+This workflow goes from the pre-processing of Sentinel 2 data to the production of biodiversity indicators.
 
 <div>
 
