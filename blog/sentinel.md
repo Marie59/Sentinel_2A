@@ -35,6 +35,11 @@ SRS offers an opportunity to expand the range of data that can support biodivers
 
 ## Usefulness
 
+<div>
+
+![PNDB](bandeau_pndb.png)
+
+</div>
 These dialogues between different scientific communities ( biodiversity and SRS) and within a single community must be supported by open source software solutions. These freely available data and software are of vital importance in facilitating the development of methodologies that are accessible to all, regardless of financial means.
 The combination of freely accessible data and open source softwares allows for the production of standardized and transparent products, improving the chances of preserving these datasets in the long term and being able to reuse them.
 
@@ -88,3 +93,14 @@ Knowledge of the leaf cell, plant structure, its state, condition, and spectral 
 
 Diversity measurements made on spatial data should not replace in situ biological diversity data, but rather complement existing data and approaches. Spatial diversity estimates are currently based on long periods, allowing for more **general** predictions on the speeds of changes in ecosystem variations.
 
+
+<div class="float-left">
+
+![](galaxy_project_logo.png)
+
+</div>       
+<div class="float-right">
+
+![](gaia_data_logo.png)
+
+</div>
