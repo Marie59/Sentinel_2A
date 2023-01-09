@@ -104,3 +104,8 @@ Diversity measurements made on spatial data should not replace in situ biologica
 ![](gaia_data_logo.png)
 
 </div>
+<div>
+
+![](pndb_logo.png)
+
+</div>
